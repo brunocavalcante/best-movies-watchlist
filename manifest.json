@@ -1,0 +1,14 @@
+{
+    "name": "Best Movies Watchlist",
+    "version" : "0.1",
+    "description": "Watchlist from the best movies of all time!",
+    "icons": {
+        "16": "icon_16.png",
+        "128": "icon_128.png"
+    },
+    "app": {
+        "launch": {
+            "local_path": "index.html"
+        }
+    }
+}
