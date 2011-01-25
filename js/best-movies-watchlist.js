@@ -1,14 +1,17 @@
+var sources = new Array();
+
 $(document).ready(function() {
-    var defaultSourceUrl = "http://www.omdb.org/movie/top";
-    loadData(defaultSourceUrl);
+    var sourceUrl = getSource();
+    loadData(sourceUrl);
+    loadSourcesOptions();
 });
 
 function loadData(url) {
-    $('table').hide();
-    $('#aside').hide();
-    $('#error').hide();
+    showLoading();
     
-    switch(url) {
+    $('table tbody tr').remove();
+    
+    switch (url) {
         case "http://www.omdb.org/movie/top":
             loadDataFromOmdb();
             break;
@@ -19,6 +22,28 @@ function loadData(url) {
     
     $('#list-source').attr('href', url);
     $('#list-source').text(url);
+    
+    setSource(url);
+}
+
+function showLoading() {
+    $('#loading').show();
+    $('table').hide();
+    $('#aside').hide();
+    $('#error').hide();
+}
+
+function loadSourcesOptions() {
+    for (var i in sources) {
+        $('#source').append('<option value="' + sources[i]['url'] + '">' + sources[i]['name'] + '</option>');
+    }
+    
+    var selectedSource = getSource();
+    $('#source').val(selectedSource);
+    
+    $('#source').change(function() {
+        loadData($(this).val()); 
+    });
 }
 
 function sanitizeUrl(url) {
@@ -73,7 +98,7 @@ function renderMovieList(movieList) {
         url = movieList[i]['url'];
         year = movieList[i]['year'];
                     
-        isWatched = (localStorage["imdbtop250." + id] == "true") ? true : false
+        isWatched = getMovieStatus(id); //(localStorage["best-movies-watchlist." + id] == "true") ? true : false
         checked = (isWatched) ? 'checked="checked"' : '';
         markedClass = (isWatched) ? ' marked' : '';
         
@@ -122,7 +147,7 @@ function getTotalOfMovies() {
 }
 
 function saveMovie(checkbox, id) {
-    localStorage["imdbtop250." + id] = checkbox.checked;
+    setMovieStatus(id, checkbox.checked); //localStorage["best-movies-watchlist." + id] = checkbox.checked;
     if (checkbox.checked) {
         $(checkbox).parent().parent().addClass("marked");
     } else {
@@ -191,4 +216,23 @@ function getAverageYear() {
 function paintTable() {
     $('table tbody tr:visible:even').addClass('even').removeClass('odd');
     $('table tbody tr:visible:odd').addClass('odd').removeClass('even');
+}
+
+// LocalStorage Accessors
+function getSource() {
+    return (localStorage["best-movies-watchlist.source"]) ? 
+                localStorage["best-movies-watchlist.source"] : 
+                "http://www.omdb.org/movie/top";
+}
+
+function setSource(url) {
+    localStorage["best-movies-watchlist.source"] = url;
+}
+
+function getMovieStatus(movieId) {
+    return (localStorage["best-movies-watchlist." + id] == "true") ? true : false;
+}
+
+function setMovieStatus(movieId, status) {
+    localStorage["best-movies-watchlist." + movieId] = status;
 }

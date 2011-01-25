@@ -5,9 +5,9 @@
         <link rel="stylesheet" href="style.css" type="text/css" />
         <script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
         <script type="text/javascript" src="js/jquery.xdomainajax.js"></script>
+        <script type="text/javascript" src="js/best-movies-watchlist.js"></script>
         <script type="text/javascript" src="js/best-movies-watchlist.omdb.js"></script>
         <script type="text/javascript" src="js/best-movies-watchlist.tooknl.js"></script>
-        <script type="text/javascript" src="js/best-movies-watchlist.js"></script>
     </head>
     <body>
         <div id="wrapper">
@@ -15,7 +15,7 @@
                 <h1>Best Movies Watchlist</h1>
             </header>
             <section id="content">
-                <p id="loading">Updating movie list...</p>
+                <p id="loading">Updating movie list, please wait...</p>
                 <p id="error">Sorry, an error occurred while trying to fetch the movie list. :/</p>
                 
                 <article>
@@ -41,6 +41,7 @@
                     <h3>Options</h3>
                     <div  class="widget">
                         <p id="options"><input type="checkbox" id="show-only-unchecked-movies">Show only unchecked movies</input></p>
+                        <p><label for="source">Fetch list from:</label><br/><select id="source"></select></p>
                         <p><button type="button" onclick="reset()">Reset</button></p>
                     </div>
                 </aside>

@@ -1,3 +1,8 @@
+omdb = new Array();
+omdb['name'] = 'omdb.org';
+omdb['url'] = 'http://www.omdb.org/movie/top';
+sources.push(omdb);
+
 function loadDataFromOmdb() {
     var movieList = new Array();
     

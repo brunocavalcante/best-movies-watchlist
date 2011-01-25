@@ -1,3 +1,8 @@
+tooknl = new Array();
+tooknl['name'] = 'took.nl';
+tooknl['url'] = 'http://www.took.nl/250/compare/full';
+sources.push(tooknl);
+
 function loadDataFromTookNl() {
     var movieList = new Array();
     
