@@ -1,64 +1,25 @@
 $(document).ready(function() {
+    var defaultSourceUrl = "http://www.omdb.org/movie/top";
+    loadData(defaultSourceUrl);
+});
+
+function loadData(url) {
     $('table').hide();
     $('#aside').hide();
     $('#error').hide();
     
-    var movieList = new Array();
-    
-    // Fetching Data from http://www.omdb.org/movie/top
-    /*var url = "http://www.omdb.org/movie/top";
-    var sanitizedUrl = sanitizeUrl(url);
-    $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.omdb.org%2Fmovie%2Ftop%22%20and%20xpath%3D'%2F%2Ftable%5B%40id%3D%22filmography%22%5D%2F%2Ftr'&format=json&diagnostics=true&callback=?", function(data){
-        if (!data.query) {
-            showInitError();
-        } else {
-            var i = 0;
-            $.each(data.query.results.tr, function(i,item){
-                if (item.td) {
-                    movie = new Array();
-                    movie['ranking'] = ++i + '.';
-                    movie['rating'] = item.td[2];
-                    movie['title'] = item.td[1].a.content;
-                    movie['id'] = item.td[1].a.href.replace('/movie/', '');
-                    movie['url'] = "http://www.omdb.org/movie/" + movie['id'];
-                    movie['year'] = '';
-                    
-                    movieList.push(movie)
-                }
-            });
-            
-            renderContent(movieList);
-        } 
-    });*/
-    
-    // Fetching Data from http://www.took.nl/250/compare/full
-    var url = "http://www.took.nl/250/compare/full";
-    var sanitizedUrl = sanitizeUrl(url);
-    $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22" + sanitizedUrl + "%22%20and%20xpath%3D'%2F%2Ftable%5B%40class%3D%22list-data%22%5D%2F%2Ftr'&format=json&diagnostics=true&callback=?", function(data){
-        if (!data.query) {
-            showInitError();
-        } else {
-            $.each(data.query.results.tr, function(i,item){
-                if (item.td) {
-                    movie = new Array();
-                    movie['ranking'] = item.td[0].strong;
-                    movie['rating'] = item.td[1];
-                    movie['title'] = item.td[3].span.a.content;
-                    movie['id'] = item.td[3].span.a.href.replace('/250/title/', '');
-                    movie['url'] = "http://www.imdb.com/title/" + movie['id'];
-                    movie['year'] = item.td[3].span.span.a.content;
-                    
-                    movieList.push(movie)
-                }
-            });
-            
-            renderContent(movieList);
-        }
-    });
+    switch(url) {
+        case "http://www.omdb.org/movie/top":
+            loadDataFromOmdb();
+            break;
+        case "http://www.took.nl/250/compare/full":
+            loadDataFromTookNl();
+            break;
+    }
     
     $('#list-source').attr('href', url);
     $('#list-source').text(url);
-});
+}
 
 function sanitizeUrl(url) {
     url.replace(':', '%3A');
@@ -107,7 +68,8 @@ function renderMovieList(movieList) {
         ranking = movieList[i]['ranking'];
         rating = movieList[i]['rating'];
         title = movieList[i]['title'];
-        id = movieList[i]['id'];
+        //id = movieList[i]['id'];
+        id = stringToSlug(title);
         url = movieList[i]['url'];
         year = movieList[i]['year'];
                     
@@ -117,6 +79,24 @@ function renderMovieList(movieList) {
         
         $('<tr class="' + markedClass + '"/>').html('<td><input type="checkbox" name="' + id + '" ' + checked + ' onchange="saveMovie(this, \'' + id + '\')" /></td><td class="position">' + ranking + '</td><td class="title"><a href="' + url + '" target="blank">' + title + '</a></td><td class="year">' + year + '</td></tr>').appendTo('#movie-list');
     }
+}
+
+function stringToSlug(str) {
+    str = str.replace(/^\s+|\s+$/g, ''); // trim
+    str = str.toLowerCase();
+  
+    // remove accents, swap ñ for n, etc
+    var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+    var to   = "aaaaeeeeiiiioooouuuunc------";
+    for (var i=0, l=from.length; i<l ; i++) {
+        str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+    }
+
+    str = str.replace(/[^a-z0-9 \n-]/g, '') // remove invalid chars
+             .replace(/\s+/g, '-') // collapse whitespace and replace by -
+             .replace(/-+/g, '-'); // collapse dashes
+
+  return str;
 }
 
 function updateSuggestions() {
