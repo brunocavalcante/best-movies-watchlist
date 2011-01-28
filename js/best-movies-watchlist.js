@@ -1,68 +1,54 @@
-/* Variables */
-
-var sources = new Array();
-
 /* Init */
 
 $(document).ready(function() {
     $('#error').hide();
     renderContent(getMovieList());
-    loadSourcesOptions();
+    
+    var sourceUrl = "http://www.omdb.org/movies/top";
+    $('#list-source').attr('href', sourceUrl);
+    $('#list-source').text(sourceUrl);
 });
 
 /* Movie List */
 
 function getMovieList() {
-    movieList = JSON.parse(localStorage["best-movies-watchlist.list"]);
-    if (!movieList || movieList.length == 10) {
-        movieListFromTheWeb = loadData(getSource());
+    movieList = getLocalMovieList();
+    if (!movieList) {
+        movieList = getDefaultMovieList();
         
-        if (movieListFromTheWeb.length > 1) {
-            setMovieList(movieListFromTheWeb);
-            movieList = movieListFromTheWeb;
-        } else if(!movieList) {
-            defaultMovieList = getDefaultMovieList();
-            setMovieList(defaultMovieList);
-            movieList = defaultMovieList;
+        // Load data only once per day
+        if (movieListDate && getMovieListDate() != getCurrentDate()) {
+            loadData();
         }
     } 
     
     return movieList;
 }
 
-function getSource() {
-    return (localStorage["best-movies-watchlist.source"]) ? 
-                localStorage["best-movies-watchlist.source"] : 
-                "http://www.omdb.org/movie/top";
+function getLocalMovieList() {
+    return (localStorage["best-movies-watchlist.list"]) ? JSON.parse(localStorage["best-movies-watchlist.list"]) : null;
 }
 
-function loadData(url) {
+function getCurrentDate() {
+    var currentTime = new Date();
+    var month = currentTime.getMonth() + 1;
+    var day = currentTime.getDate();
+    var year = currentTime.getFullYear();
+    
+    return month + "/" + day + "/" + year;
+}
+
+function getMovieListDate() {
+    return localStorage["best-movies-watchlist.list-date"];
+}
+
+function loadData() {
     showLoading();
-    
-    $('table tbody tr').remove();
-    
-    data = new Array();
-    switch (url) {
-        case "http://www.omdb.org/movie/top":
-            data = loadDataFromOmdb();
-            break;
-        case "http://www.took.nl/250/compare/full":
-            data = loadDataFromTookNl();
-            break;
-    }
-    
-    $('#list-source').attr('href', url);
-    $('#list-source').text(url);
-    setSource(url);
-    
-    return data;
-}
-
-function setSource(url) {
-    localStorage["best-movies-watchlist.source"] = url;
+    loadDataFromOmdb();
 }
 
 function setMovieList(movieList) {
+    localStorage["best-movies-watchlist.list-date"] = getCurrentDate();
     localStorage["best-movies-watchlist.list"] = JSON.stringify(movieList);
 }
 
@@ -85,6 +71,8 @@ function getDefaultMovieList() {
 /* Render */
 
 function renderContent(movieList) {
+    $('table tbody tr').remove();    
+    
     renderMovieList(movieList);
             
     $('#show-only-unchecked-movies').click(function() {
@@ -92,7 +80,6 @@ function renderContent(movieList) {
     });
     
     $('#loading').hide();
-    $('#aside').show('fast');
     $('table').show('fast');
     
     updateApp();
@@ -111,7 +98,15 @@ function renderMovieList(movieList) {
         checked = (isWatched) ? 'checked="checked"' : '';
         markedClass = (isWatched) ? ' marked' : '';
         
-        $('<tr class="' + markedClass + '"/>').html('<td><input type="checkbox" name="' + id + '" ' + checked + ' onchange="saveMovie(this, \'' + id + '\')" /></td><td class="position">' + ranking + '.</td><td class="title"><a href="' + url + '" target="blank">' + title + '</a></td><td class="year">' + year + '</td></tr>').appendTo('#movie-list');
+        rowHtml = '<td><input type="checkbox" name="' + id + '" ' + checked + ' onchange="saveMovie(this, \'' + id + '\')" /></td>' + 
+                  '<td class="position">' + ranking + '.</td>' + 
+                  '<td class="title"><a href="' + url + '" target="blank">' + title + '</a></td>' + 
+                  '<td class="year">' + year + '</td>' + 
+                  '</tr>';
+        
+        
+        
+        $('<tr class="' + markedClass + '"/>').html(rowHtml).appendTo('#movie-list');
     }
 }
 
@@ -185,7 +180,11 @@ function updateSuggestions() {
     if (movieSuggestions) {
         for (var i = 0; i < movieSuggestions.length; i++) {
             if (movieSuggestions[i]) {
-                htmlSuggestions += '<li><a href="' + movieSuggestions[i]['url'] + '" target="blank">' + movieSuggestions[i]['title'] + '</a></li>';
+                htmlSuggestions += '<li>' + 
+                                   '<a href="' + movieSuggestions[i]['url'] + '" target="blank">' + 
+                                   movieSuggestions[i]['title'] + 
+                                   '</a>' + 
+                                   '</li>';
             }
         }
         $('#suggestions').html(htmlSuggestions);
@@ -242,23 +241,7 @@ function getAverageYear() {
 function showLoading() {
     $('#loading').show();
     $('table').hide();
-    //$('#aside').hide();
     $('#error').hide();
-}
-
-/* Sources Options */
-
-function loadSourcesOptions() {
-    for (var i in sources) {
-        $('#source').append('<option value="' + sources[i]['url'] + '">' + sources[i]['name'] + '</option>');
-    }
-    
-    var selectedSource = getSource();
-    $('#source').val(selectedSource);
-    
-    $('#source').change(function() {
-        loadData($(this).val()); 
-    });
 }
 
 function sanitizeUrl(url) {
@@ -276,7 +259,7 @@ function showInitError() {
 /* User Actions */
 
 function saveMovie(checkbox, id) {
-    setMovieStatus(id, checkbox.checked); //localStorage["best-movies-watchlist." + id] = checkbox.checked;
+    setMovieStatus(id, checkbox.checked);
     if (checkbox.checked) {
         $(checkbox).parent().parent().addClass("marked");
     } else {
@@ -290,6 +273,7 @@ function reset() {
     if (!confirm('Are you sure you want to reset the application? All your data will be lost...')) {
         return false;
     }
+    
     localStorage.clear();
     $('table input:checked').attr('checked', false);
     $('table tr').removeClass('marked');
