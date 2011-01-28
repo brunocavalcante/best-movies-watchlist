@@ -1,62 +1,88 @@
+/* Variables */
+
 var sources = new Array();
 
+/* Init */
+
 $(document).ready(function() {
-    var sourceUrl = getSource();
-    loadData(sourceUrl);
+    $('#error').hide();
+    renderContent(getMovieList());
     loadSourcesOptions();
 });
+
+/* Movie List */
+
+function getMovieList() {
+    movieList = JSON.parse(localStorage["best-movies-watchlist.list"]);
+    if (!movieList || movieList.length == 10) {
+        movieListFromTheWeb = loadData(getSource());
+        
+        if (movieListFromTheWeb.length > 1) {
+            setMovieList(movieListFromTheWeb);
+            movieList = movieListFromTheWeb;
+        } else if(!movieList) {
+            defaultMovieList = getDefaultMovieList();
+            setMovieList(defaultMovieList);
+            movieList = defaultMovieList;
+        }
+    } 
+    
+    return movieList;
+}
+
+function getSource() {
+    return (localStorage["best-movies-watchlist.source"]) ? 
+                localStorage["best-movies-watchlist.source"] : 
+                "http://www.omdb.org/movie/top";
+}
 
 function loadData(url) {
     showLoading();
     
     $('table tbody tr').remove();
     
+    data = new Array();
     switch (url) {
         case "http://www.omdb.org/movie/top":
-            loadDataFromOmdb();
+            data = loadDataFromOmdb();
             break;
         case "http://www.took.nl/250/compare/full":
-            loadDataFromTookNl();
+            data = loadDataFromTookNl();
             break;
     }
     
     $('#list-source').attr('href', url);
     $('#list-source').text(url);
-    
     setSource(url);
-}
-
-function showLoading() {
-    $('#loading').show();
-    $('table').hide();
-    $('#aside').hide();
-    $('#error').hide();
-}
-
-function loadSourcesOptions() {
-    for (var i in sources) {
-        $('#source').append('<option value="' + sources[i]['url'] + '">' + sources[i]['name'] + '</option>');
-    }
     
-    var selectedSource = getSource();
-    $('#source').val(selectedSource);
-    
-    $('#source').change(function() {
-        loadData($(this).val()); 
-    });
+    return data;
 }
 
-function sanitizeUrl(url) {
-    url.replace(':', '%3A');
-    url.replace('/', '%2F');
-    
-    return url;
+function setSource(url) {
+    localStorage["best-movies-watchlist.source"] = url;
 }
 
-function showInitError() {
-    $('#loading').hide();
-    $('#error').show();
+function setMovieList(movieList) {
+    localStorage["best-movies-watchlist.list"] = JSON.stringify(movieList);
 }
+
+function getDefaultMovieList() {
+    movieList = new Array();
+    movieList.push({ranking: 1, title: 'The Godfather', url: 'http://www.omdb.org/movie/238', rating: "8.15", year: ''});
+    movieList.push({ranking: 2, title: 'The Godfather Part II', url: 'http://www.omdb.org/movie/240', rating: "8.14", year: ''});
+    movieList.push({ranking: 3, title: 'The Silence of the Lambs', url: 'http://www.omdb.org/movie/274', rating: "8.07", year: ''});
+    movieList.push({ranking: 4, title: 'Pulp Fiction', url: 'http://www.omdb.org/movie/680', rating: "8.06", year: ''});
+    movieList.push({ranking: 5, title: 'Shawshank Redemption', url: 'http://www.omdb.org/movie/278', rating: "8.06", year: ''});
+    movieList.push({ranking: 6, title: 'The Deer Hunter', url: 'http://www.omdb.org/movie/11778', rating: "8.06", year: ''});
+    movieList.push({ranking: 7, title: 'Gladiator', url: 'http://www.omdb.org/movie/98', rating: "8.05", year: ''});
+    movieList.push({ranking: 8, title: 'Titanic', url: 'http://www.omdb.org/movie/597', rating: "8.04", year: ''});
+    movieList.push({ranking: 9, title: 'Se7en', url: 'http://www.omdb.org/movie/807', rating: "8.04", year: ''});
+    movieList.push({ranking: 10, title: 'Fight Club', url: 'http://www.omdb.org/movie/550', rating: "8.04", year: ''});
+    
+    return movieList;
+}
+
+/* Render */
 
 function renderContent(movieList) {
     renderMovieList(movieList);
@@ -72,37 +98,20 @@ function renderContent(movieList) {
     updateApp();
 }
 
-function updateApp() {
-    updateTable();
-    updateTotal();
-    updateSuggestions();
-}
-
-function updateTable() {
-    if ($('#show-only-unchecked-movies').attr('checked') == true) {
-        $('table tr.marked').hide();
-    } else {
-        $('table tr').show();
-    }
-    
-    paintTable();
-}
-
 function renderMovieList(movieList) {
     for (var i in movieList) {
         ranking = movieList[i]['ranking'];
         rating = movieList[i]['rating'];
         title = movieList[i]['title'];
-        //id = movieList[i]['id'];
         id = stringToSlug(title);
         url = movieList[i]['url'];
         year = movieList[i]['year'];
                     
-        isWatched = getMovieStatus(id); //(localStorage["best-movies-watchlist." + id] == "true") ? true : false
+        isWatched = getMovieStatus(id);
         checked = (isWatched) ? 'checked="checked"' : '';
         markedClass = (isWatched) ? ' marked' : '';
         
-        $('<tr class="' + markedClass + '"/>').html('<td><input type="checkbox" name="' + id + '" ' + checked + ' onchange="saveMovie(this, \'' + id + '\')" /></td><td class="position">' + ranking + '</td><td class="title"><a href="' + url + '" target="blank">' + title + '</a></td><td class="year">' + year + '</td></tr>').appendTo('#movie-list');
+        $('<tr class="' + markedClass + '"/>').html('<td><input type="checkbox" name="' + id + '" ' + checked + ' onchange="saveMovie(this, \'' + id + '\')" /></td><td class="position">' + ranking + '.</td><td class="title"><a href="' + url + '" target="blank">' + title + '</a></td><td class="year">' + year + '</td></tr>').appendTo('#movie-list');
     }
 }
 
@@ -124,14 +133,36 @@ function stringToSlug(str) {
   return str;
 }
 
-function updateSuggestions() {
-    var movieSuggestions = getSuggestions();
-    var htmlSuggestions = '';
-    for (var i = 0; i < movieSuggestions.length; i++) {
-        htmlSuggestions += '<li><a href="' + movieSuggestions[i]['url'] + '" target="blank">' + movieSuggestions[i]['title'] + '</a></li>';
-    }
-    $('#suggestions').html(htmlSuggestions);
+function getMovieStatus(movieId) {
+    return (localStorage["best-movies-watchlist." + id] == "true") ? true : false;
 }
+
+function setMovieStatus(movieId, status) {
+    localStorage["best-movies-watchlist." + movieId] = status;
+}
+
+function updateApp() {
+    updateTable();
+    updateTotal();
+    updateSuggestions();
+}
+
+function updateTable() {
+    if ($('#show-only-unchecked-movies').attr('checked') == true) {
+        $('table tr.marked').hide();
+    } else {
+        $('table tr').show();
+    }
+    
+    paintTable();
+}
+
+function paintTable() {
+    $('table tbody tr:visible:even').addClass('even').removeClass('odd');
+    $('table tbody tr:visible:odd').addClass('odd').removeClass('even');
+}
+
+/* Totals */
 
 function updateTotal() {
     var totalMovies = getTotalOfMovies()
@@ -146,26 +177,19 @@ function getTotalOfMovies() {
     return $('tbody tr').size();
 }
 
-function saveMovie(checkbox, id) {
-    setMovieStatus(id, checkbox.checked); //localStorage["best-movies-watchlist." + id] = checkbox.checked;
-    if (checkbox.checked) {
-        $(checkbox).parent().parent().addClass("marked");
-    } else {
-        $(checkbox).parent().parent().removeClass("marked");
-    }
-    
-    updateApp();
-}
+/* Suggestions */
 
-function reset() {
-    if (!confirm('Are you sure you want to reset the application? All your data will be lost...')) {
-        return false;
+function updateSuggestions() {
+    var movieSuggestions = getSuggestions();
+    var htmlSuggestions = '';
+    if (movieSuggestions) {
+        for (var i = 0; i < movieSuggestions.length; i++) {
+            if (movieSuggestions[i]) {
+                htmlSuggestions += '<li><a href="' + movieSuggestions[i]['url'] + '" target="blank">' + movieSuggestions[i]['title'] + '</a></li>';
+            }
+        }
+        $('#suggestions').html(htmlSuggestions);
     }
-    localStorage.clear();
-    $('table input:checked').attr('checked', false);
-    $('table tr').removeClass('marked');
-    
-    updateApp();
 }
 
 function getSuggestions() {
@@ -213,26 +237,62 @@ function getAverageYear() {
     return Math.round(totalYear / totalWatchedMovies);
 }
 
-function paintTable() {
-    $('table tbody tr:visible:even').addClass('even').removeClass('odd');
-    $('table tbody tr:visible:odd').addClass('odd').removeClass('even');
+/* Loading */
+
+function showLoading() {
+    $('#loading').show();
+    $('table').hide();
+    //$('#aside').hide();
+    $('#error').hide();
 }
 
-// LocalStorage Accessors
-function getSource() {
-    return (localStorage["best-movies-watchlist.source"]) ? 
-                localStorage["best-movies-watchlist.source"] : 
-                "http://www.omdb.org/movie/top";
+/* Sources Options */
+
+function loadSourcesOptions() {
+    for (var i in sources) {
+        $('#source').append('<option value="' + sources[i]['url'] + '">' + sources[i]['name'] + '</option>');
+    }
+    
+    var selectedSource = getSource();
+    $('#source').val(selectedSource);
+    
+    $('#source').change(function() {
+        loadData($(this).val()); 
+    });
 }
 
-function setSource(url) {
-    localStorage["best-movies-watchlist.source"] = url;
+function sanitizeUrl(url) {
+    url.replace(':', '%3A');
+    url.replace('/', '%2F');
+    
+    return url;
 }
 
-function getMovieStatus(movieId) {
-    return (localStorage["best-movies-watchlist." + id] == "true") ? true : false;
+function showInitError() {
+    $('#loading').hide();
+    $('#error').show();
 }
 
-function setMovieStatus(movieId, status) {
-    localStorage["best-movies-watchlist." + movieId] = status;
+/* User Actions */
+
+function saveMovie(checkbox, id) {
+    setMovieStatus(id, checkbox.checked); //localStorage["best-movies-watchlist." + id] = checkbox.checked;
+    if (checkbox.checked) {
+        $(checkbox).parent().parent().addClass("marked");
+    } else {
+        $(checkbox).parent().parent().removeClass("marked");
+    }
+    
+    updateApp();
+}
+
+function reset() {
+    if (!confirm('Are you sure you want to reset the application? All your data will be lost...')) {
+        return false;
+    }
+    localStorage.clear();
+    $('table input:checked').attr('checked', false);
+    $('table tr').removeClass('marked');
+    
+    updateApp();
 }

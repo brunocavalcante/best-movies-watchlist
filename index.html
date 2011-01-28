@@ -4,7 +4,7 @@
         <title>Best Movies Watchlist</title>
         <link rel="stylesheet" href="style.css" type="text/css" />
         <script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
-        <script type="text/javascript" src="js/jquery.xdomainajax.js"></script>
+        <script type="text/javascript" src="js/jquery.json-2.2.min.js"></script>
         <script type="text/javascript" src="js/best-movies-watchlist.js"></script>
         <script type="text/javascript" src="js/best-movies-watchlist.omdb.js"></script>
         <script type="text/javascript" src="js/best-movies-watchlist.tooknl.js"></script>
@@ -12,14 +12,14 @@
     <body>
         <div id="wrapper">
             <header>
-                <h1>Best Movies Watchlist</h1>
+                <h1>Best <strong>Movies</strong> Watchlist</h1>
             </header>
             <section id="content">
                 <p id="loading">Updating movie list, please wait...</p>
                 <p id="error">Sorry, an error occurred while trying to fetch the movie list. :/</p>
                 
                 <article>
-                    <table id="movie-list">
+                    <table id="movie-list" summary="Best Movies of All Time">
                         <thead>
                             <tr>
                                 <th></th>
@@ -33,23 +33,32 @@
                 
                 <aside id="aside">
                     <h3>Status</h3>
-                    <p class="widget"><span id="total-watched">0</span>/<span id="total">0</span> (<span id="total-percentage">0%</span>)</p>
+                    <p class="widget">
+                        <span id="total-watched">0</span>/<span id="total">0</span> (<span id="total-percentage">0%</span>)
+                    </p>
                     
                     <h3>Suggestions</h3>
                     <ol id="suggestions" class="widget"></ol>
                     
                     <h3>Options</h3>
                     <div  class="widget">
-                        <p id="options"><input type="checkbox" id="show-only-unchecked-movies">Show only unchecked movies</input></p>
-                        <p><label for="source">Fetch list from:</label><br/><select id="source"></select></p>
-                        <p><button type="button" onclick="reset()">Reset</button></p>
+                        <p id="options"
+                            <input type="checkbox" id="show-only-unchecked-movies">Show only unchecked movies</input>
+                        </p>
+                        <p>
+                            <label for="source">Fetch list from:</label><br/><select id="source"></select>
+                        </p>
+                        <p>
+                            <button type="button" onclick="reset()">Reset</button>
+                        </p>
                     </div>
                 </aside>
             </section>
             <section id="footer">
                 <p id="about">
                     List fetched from <a id="list-source" href="#"></a><br/>
-                    <span id="license">This app is licensed under the terms of the Creative Commons License and under the GNU Free.</span>
+                    <span id="license">This app is licensed under the terms of the 
+                    Creative Commons License and under the GNU Free.</span>
                 </p>
                 <img id="badge" src="img/html5-badge-h-css3-semantics-storage.png" alt="HTML5 Badge: CSS3, Semantics & Storage" />
             </section>
