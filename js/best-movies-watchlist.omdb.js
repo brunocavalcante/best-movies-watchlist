@@ -14,7 +14,7 @@ function loadDataFromOmdb() {
                         ranking: ++i, 
                         title: item.td[1].a.content, 
                         url: "http://www.omdb.org" + item.td[1].a.href, 
-                        rating: item.td[2],
+                        rating: item.td[2].p,
                         year: ''
                     }
 

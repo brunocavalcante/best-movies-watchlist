@@ -15,12 +15,14 @@ function getMovieList() {
     movieList = getLocalMovieList();
     if (!movieList) {
         movieList = getDefaultMovieList();
-        
+        loadData();
+    } else {
         // Load data only once per day
-        if (movieListDate && getMovieListDate() != getCurrentDate()) {
+        movieListDate = getMovieListDate();
+        if (movieListDate && movieListDate != getCurrentDate()) {
             loadData();
         }
-    } 
+    }
     
     return movieList;
 }
@@ -102,6 +104,7 @@ function renderMovieList(movieList) {
                   '<td class="position">' + ranking + '.</td>' + 
                   '<td class="title"><a href="' + url + '" target="blank">' + title + '</a></td>' + 
                   '<td class="year">' + year + '</td>' + 
+                  '<td class="rating">' + rating + '</td>' + 
                   '</tr>';
         
         
