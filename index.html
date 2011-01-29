@@ -7,6 +7,7 @@
         <script type="text/javascript" src="js/jquery.json-2.2.min.js"></script>
         <script type="text/javascript" src="js/best-movies-watchlist.js"></script>
         <script type="text/javascript" src="js/best-movies-watchlist.omdb.js"></script>
+        <script type="text/javascript" src="js/best-movies-watchlist.tmdb.js"></script>
         <script type="text/javascript" src="js/best-movies-watchlist.tooknl.js"></script>
     </head>
     <body>
@@ -47,19 +48,23 @@
                             <input type="checkbox" id="show-only-unchecked-movies">Show only unchecked movies</input>
                         </p>
                         <p>
+                            <label for="source">Fetch list from:</label><br/>
+                            <select id="source"></select>
+                        </p>
+                        <p>
                             <button type="button" onclick="reset()">Reset</button>
                         </p>
                     </div>
                 </aside>
             </section>
-            <section id="footer">
+            <footer id="footer">
                 <p id="about">
                     List fetched from <a id="list-source" href="#" target="_blank"></a><br/>
                     <span id="license">This app is licensed under the terms of the 
                     Creative Commons License and under the GNU Free.</span>
                 </p>
                 <img id="badge" src="img/html5-badge-h-css3-semantics-storage.png" alt="HTML5 Badge: CSS3, Semantics & Storage" />
-            </section>
+            </footer>
         </div>
     </body>
 </html>

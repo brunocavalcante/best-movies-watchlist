@@ -1,12 +1,12 @@
+/* Variables */
+var sources = new Array();
+
 /* Init */
 
 $(document).ready(function() {
     $('#error').hide();
     renderContent(getMovieList());
-    
-    var sourceUrl = "http://www.omdb.org/movies/top";
-    $('#list-source').attr('href', sourceUrl);
-    $('#list-source').text(sourceUrl);
+    renderSourcesOptions();
 });
 
 /* Movie List */
@@ -15,7 +15,7 @@ function getMovieList() {
     movieList = getLocalMovieList();
     if (!movieList) {
         movieList = getDefaultMovieList();
-        loadData();
+        loadData(getSource());
     } else {
         // Load data only once per day
         movieListDate = getMovieListDate();
@@ -25,6 +25,10 @@ function getMovieList() {
     }
     
     return movieList;
+}
+
+function getSource() {
+    return (localStorage['best-movies-watchlist.source']) ? localStorage['best-movies-watchlist.source'] : sources[0]['value'];
 }
 
 function getLocalMovieList() {
@@ -44,9 +48,17 @@ function getMovieListDate() {
     return localStorage["best-movies-watchlist.list-date"];
 }
 
-function loadData() {
+function loadData(source) {
     showLoading();
-    loadDataFromOmdb();
+    
+    switch (source) {
+        case 'www.omdb.org':
+            loadDataFromOmdb();
+            break;
+        case 'www.tmdb.org': 
+            loadDataFromTmdb();
+            break;
+    }
 }
 
 function setMovieList(movieList) {
@@ -143,6 +155,7 @@ function updateApp() {
     updateTable();
     updateTotal();
     updateSuggestions();
+    updateActiveSource();
 }
 
 function updateTable() {
@@ -239,6 +252,21 @@ function getAverageYear() {
     return Math.round(totalYear / totalWatchedMovies);
 }
 
+/* Sources */
+
+function updateActiveSource() {
+    source = getSource();
+    
+    $('#source').val(source);
+    
+    $('#list-source').attr('href', source);
+    $('#list-source').text(source);
+}
+
+function setSource(source) {
+    localStorage['best-movies-watchlist.source'] = source;
+}
+
 /* Loading */
 
 function showLoading() {
@@ -257,6 +285,19 @@ function sanitizeUrl(url) {
 function showInitError() {
     $('#loading').hide();
     $('#error').show();
+}
+
+/* Sources */
+function renderSourcesOptions() {
+    for (var i in sources) {
+        $('#source').append('<option value="' + sources[i]['value'] + '">' + sources[i]['name'] + '</option>');
+    }
+    
+    $('#source').val(getSource());
+    
+    $('#source').change(function() {
+        loadData($(this).val());
+    })
 }
 
 /* User Actions */

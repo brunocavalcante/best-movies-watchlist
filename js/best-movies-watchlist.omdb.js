@@ -1,3 +1,5 @@
+sources.push({name: 'OMDB', value: 'www.omdb.org'});
+
 function loadDataFromOmdb() {
     var movieList = new Array();
     
@@ -23,6 +25,7 @@ function loadDataFromOmdb() {
             });
 
             setMovieList(movieList);
+            setSource('www.omdb.org');
             renderContent(movieList);
         } 
     });
