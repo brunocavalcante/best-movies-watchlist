@@ -259,7 +259,7 @@ function updateActiveSource() {
     
     $('#source').val(source);
     
-    $('#list-source').attr('href', source);
+    $('#list-source').attr('href', 'http://' + source);
     $('#list-source').text(source);
 }
 
