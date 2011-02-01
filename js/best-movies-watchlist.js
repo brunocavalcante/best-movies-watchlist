@@ -19,8 +19,8 @@ function getMovieList() {
     } else {
         // Load data only once per day
         movieListDate = getMovieListDate();
-        if (movieListDate && movieListDate != getCurrentDate()) {
-            loadData();
+		if (movieListDate && (movieListDate != getCurrentDate())) {
+            loadData(getSource());
         }
     }
     
