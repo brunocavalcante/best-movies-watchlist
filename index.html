@@ -2,9 +2,15 @@
 <html>
     <head>
         <title>Best Movies Watchlist</title>
-        <link rel="stylesheet" href="style.css" type="text/css" />
+        <link rel="stylesheet" href="css/jquery.ui.all.css" type="text/css" />
+        <link rel="stylesheet" href="css/jquery.ui.theme.css" type="text/css" />
+        <link rel="stylesheet" href="css/jquery.ui.checkbox.css" type="text/css" />
+        <link rel="stylesheet" href="css/style.css" type="text/css" />
         <script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
         <script type="text/javascript" src="js/jquery.json-2.2.min.js"></script>
+        <script type="text/javascript" src="js/jquery.ui.core.js"></script>
+        <script type="text/javascript" src="js/jquery.ui.widget.js"></script>
+        <script type="text/javascript" src="js/jquery.ui.checkbox.js"></script>
         <script type="text/javascript" src="js/best-movies-watchlist.js"></script>
         <script type="text/javascript" src="js/best-movies-watchlist.omdb.js"></script>
         <script type="text/javascript" src="js/best-movies-watchlist.tmdb.js"></script>
@@ -12,7 +18,7 @@
     <body>
         <div id="wrapper">
             <header>
-                <h1>Best <strong>Movies</strong> Watchlist</h1>
+                <h1>Best Movies Watchlist</h1>
             </header>
             <section id="content">
                 <p id="loading">Updating movie list, please wait...</p>
@@ -33,22 +39,30 @@
                 </article>
                 
                 <aside id="aside">
-                    <h3>Status</h3>
+                    <h3 id="title-status">Status</h3>
                     <p class="widget">
                         <span id="total-watched">0</span>/<span id="total">0</span> (<span id="total-percentage">0%</span>)
                     </p>
                     
-                    <h3>Suggestions</h3>
+                    <h3 id="title-suggestions">Suggestions</h3>
                     <ol id="suggestions" class="widget"></ol>
                     
-                    <h3>Options</h3>
+                    <h3 id="title-options">Options</h3>
                     <div  class="widget">
                         <p id="options">
-                            <input type="checkbox" id="show-only-unchecked-movies">Show only unchecked movies</input>
+                            <input type="checkbox" id="show-only-unchecked-movies" />
+                            <label for="show-only-unchecked-movies">Show only unchecked movies</label>
                         </p>
                         <p>
                             <label for="source">Fetch list from:</label><br/>
                             <select id="source"></select>
+                        </p>
+                        <p>
+                            <label for="theme">Theme:</label><br/>
+                            <select id="theme">
+                            	<option value="theme-default">Default</option>
+                            	<option value="theme-dark">Dark</option>
+                            </select>
                         </p>
                         <p>
                             <button type="button" onclick="reset()">Reset</button>
@@ -62,7 +76,6 @@
                     <span id="license">This app is licensed under the terms of the 
                     Creative Commons License and under the GNU Free.</span>
                 </p>
-                <img id="badge" src="img/html5-badge-h-css3-semantics-storage.png" alt="HTML5 Badge: CSS3, Semantics & Storage" />
             </footer>
         </div>
     </body>

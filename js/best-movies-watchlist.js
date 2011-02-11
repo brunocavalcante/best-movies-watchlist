@@ -7,6 +7,7 @@ $(document).ready(function() {
     $('#error').hide();
     renderContent(getMovieList());
     renderSourcesOptions();
+    renderThemeSwitcher();
 });
 
 /* Movie List */
@@ -298,6 +299,32 @@ function renderSourcesOptions() {
     $('#source').change(function() {
         loadData($(this).val());
     })
+}
+
+/* Theme Switcher */
+function renderThemeSwitcher() {
+	$('#theme').val(getTheme());
+	updateTheme();
+	
+	$('#theme').change(function() {
+		theme = $(this).val();
+		updateTheme();
+		saveTheme(theme);
+	});
+}
+
+function getTheme() {
+	return (localStorage['best-movies-watchlist.theme']) ? localStorage['best-movies-watchlist.theme'] : 'theme-default';
+}
+
+function updateTheme() {
+	theme = $('#theme').val();
+	$('body').removeClass().addClass(theme);
+}
+
+
+function saveTheme(theme) {
+	localStorage['best-movies-watchlist.theme'] = theme;
 }
 
 /* User Actions */
