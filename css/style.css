@@ -1,0 +1,61 @@
+/* Float Fix */
+#content:after, #footer:after {content:".";clear:both;display:block;overflow:hidden;visibility:hidden;height:0}
+
+/* Basic */
+body {font-family: Trebuchet, sans-serif; color: #333; margin: 0}
+a {color: #333; border-style: dotted; border-width: 0 0 1px; border-color: #333; text-decoration: none}
+a:hover {border-style: solid; background: #333; color: white}
+select, button {padding: 0.25em 0.5em}
+
+/* Structure */
+#content, #footer {margin: 2.5% 5%}
+article {width: 75%; float: left}
+aside {width: 20%; float: right; margin-left: 5%}
+
+/* Header */
+header {margin: 0; padding: 0.75em 0; background: white url("../img/theme-default/header-bg.png") repeat-x bottom; color: white; min-width: 600px}
+header h1 {text-align: center; font-weight: bold; text-shadow: 1px 1px #EEE; color: black}
+
+/* Sidebar */
+.widget {margin-bottom: 2.5em}
+aside ol {padding-left: 1.6em}
+aside ol li {margin: 0.5em 0}
+#total-watched, #total-percentage {font-weight: bold}
+#title-status, #title-suggestions, #title-options {text-indent: 32px; background-position: 0 50%; background-repeat: no-repeat}
+#title-status {background-image: url("../img/icons/info.png")}
+#title-suggestions {background-image: url("../img/icons/favorite.png")}
+#title-options {background-image: url("../img/icons/process.png")}
+
+/* Table */
+table {border-spacing: 0; border-collapse: collapse; width: 100%}
+table th {text-align: left}
+table tr.even {background-color: #FFFFFF}
+table tr.odd {background-color: #FAFAFA}
+table tbody tr:first-child {border-top: #333}
+table td, th {padding: 0.5em 1em}
+table td {border: 1px solid #F3F3F3}
+table th {border-bottom: 2px solid #666}
+tr.marked, tr.marked a {color: #BBB; text-decoration: line-through; border-color: #BBB}
+
+/* Messages */
+#loading, #error {text-align: center; padding: 0.5em 1em; color: #333}
+#loading {background: #FFF0AA}
+#error {background: #FFAEAE}
+
+/* Footer */
+#footer {margin-top: 2em; margin-bottom: 2em; font-size: 0.9em}
+#footer, #footer a {color: #999}
+#about {float: left; line-height: 20px}
+
+/* Tema Oscar */
+body.theme-dark {background: #0d0d0d url("../img/theme-dark/body-bg.png") repeat-x top}
+body.theme-dark, body.theme-dark a, body.theme-dark select {color: #cfa75d}
+body.theme-dark a:hover {background: #111}
+body.theme-dark header {background: #000 url("../img/theme-dark/header-bg.png") repeat-x bottom}
+body.theme-dark header h1 {color: white; text-shadow: 2px 2px black}
+body.theme-dark table th{border-color: #222}
+body.theme-dark table td {border-width: 0}
+body.theme-dark table tr.even {background: transparent}
+body.theme-dark table tr.marked, body.theme-dark table tr.marked a {color: #333; border-color: #333}
+body.theme-dark table tr.odd {background: #111}
+body.theme-dark select {background: #333}
