@@ -1,0 +1,18 @@
+{
+  "version": "0.2",
+  "name": "Best Movies Watchlist",
+  "description": "Watchlist from the best movies of all time!",
+  "icons": {
+    "16": "icon_16.png",
+    "38": "icon_16.png",
+    "128": "icon_128.png"
+  },
+  "developer": {
+    "name": "Astux",
+    "url": "http://astux.com.br"
+  },
+  "installs_allowed_from": [
+    "https://marketplace.mozilla.org"
+  ],
+  "default_locale": "en"
+}
